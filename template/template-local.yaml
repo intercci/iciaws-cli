@@ -16,8 +16,7 @@ Resources:
       CodeUri: target/lambda/{{ project_name }}/
       Environment:
         Variables:
-          TABLE_NAME: ici-{{ project_name }}
-          AWS_REGION: eu-north-1
+          TABLE_NAME: {{ project_name }}
           AWS_SAM_LOCAL: http://host.docker.internal:8000
           PUB_KEY: H8nfwRco3FxcD2r8MvtPuW7N7mFJLNDQFNZUhUCqWDM=
           PRV_KEY: p3mT73gXTe8CKykJOETDj0gIa2vlgFqH9jk5HOLR9MYfyd/BFyjcXFwPavwy+0+5bs3uYUks0NAU1lSFQKpYMw==

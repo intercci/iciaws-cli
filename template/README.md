@@ -17,6 +17,8 @@ Read more about building your lambda function in [the Cargo Lambda documentation
 
 You can run regular Rust unit tests with `cargo test`.
 
+You can also run integration tests with unit tests by running a [https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html](local DynamoDB server). Use iciaws_test_helper crate to simplify the test code.
+
 If you want to run integration tests locally, you can use the `cargo lambda watch` and `cargo lambda invoke` commands to do it.
 
 First, run `cargo lambda watch` to start a local server. When you make changes to the code, the server will automatically restart.
@@ -51,8 +53,20 @@ curl https://localhost:9000
 Read more about running the local server in [the Cargo Lambda documentation for the `watch` command](https://www.cargo-lambda.info/commands/watch.html).
 Read more about invoking the function in [the Cargo Lambda documentation for the `invoke` command](https://www.cargo-lambda.info/commands/invoke.html).
 
-## Deploying
+## Deploy with cargo-lambda
 
 To deploy the project, run `cargo lambda deploy`. This will create an IAM role and a Lambda function in your AWS account.
 
 Read more about deploying your lambda function in [the Cargo Lambda documentation](https://www.cargo-lambda.info/commands/deploy.html).
+
+## Deploy with SAM
+
+Use icitools/gen_routes to generate the template.yaml file for sam deploy.
+
+```bash
+gen_routes all .
+```
+
+```bash
+sam deploy --guided
+```
