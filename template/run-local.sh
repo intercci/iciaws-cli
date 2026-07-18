@@ -1,0 +1,1 @@
+sam local start-api -t template-local.yaml

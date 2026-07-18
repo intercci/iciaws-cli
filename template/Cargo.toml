@@ -1,0 +1,38 @@
+[package]
+name = "{{ project_name }}"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+http = "1.4.0"
+lambda_http = "1.0.0"
+
+aws-config = "1.8.15"
+aws-sdk-dynamodb = "1.108.0"
+
+tokio = { version = "1.50.0", features = ["macros"] }
+
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+serde_dynamo = { version = "4.3.0", features = ["aws-sdk-dynamodb+1"] }
+
+chrono = "0.4.44"
+dotenv = "0.15.0"
+
+uuid = { version = "1.22.0", features = ["v4", "v7", "fast-rng"] }
+base64 = "0.22.1"
+nanoid = "0.5.0"
+bytes = "1.10.1"
+anyhow = "1.0.102"
+thiserror = "2.0.18"
+
+iciaws_router = { git = "https://github.com/intercci/iciaws", package = "iciaws_router" }
+iciaws_macros = { git = "https://github.com/intercci/iciaws", package = "iciaws_macros" }
+iciaws_dynamo = { git = "https://github.com/intercci/iciaws", package = "iciaws_dynamo" }
+iciaws_s3 = { git = "https://github.com/intercci/iciaws", package = "iciaws_s3" }
+iciaws_ses = { git = "https://github.com/intercci/iciaws", package = "iciaws_ses" }
+iciaws_sns = { git = "https://github.com/intercci/iciaws", package = "iciaws_sns" }
+
+[dev-dependencies]
+regex = "1.12.3"
+serial_test = "3.4.0"
