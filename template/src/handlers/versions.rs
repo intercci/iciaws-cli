@@ -2,20 +2,21 @@ use anyhow::Result;
 use iciaws_router::{
     addons::AddonHolder,
     input::RouteHandlerInput,
-    output::{RouteHandlerOutput, ok_json},
+    output::{ok_json, RouteHandlerOutput},
     types::RouteHandler,
 };
-use iciaws_router_macros::route;
-use std::future::Future;
+use iciaws_macros::route;
 use std::pin::Pin;
-use serde_json;
+use std::future::Future;
 
-const VERSION: &'static str = "0.0.1";
+const VERSION: &str = "0.0.1";
 
-#[route("GET/version")] // this macro generates GetVersionHandler struct with get_key() method
-/// This function handles the http request GET /version
-pub async fn get_version(_input: RouteHandlerInput, _addons: &AddonHolder) -> Result<RouteHandlerOutput> {
-    let ds = serde_json::json!({"state": "Running", "version": VERSION});
-    let js = serde_json::to_string(&ds)?;
-    Ok(ok_json(js))
+/// Handle `GET /version` — returns service name and version.
+#[route("GET/version")]
+pub async fn get_version(
+    _input: RouteHandlerInput,
+    _addons: &AddonHolder,
+) -> Result<RouteHandlerOutput> {
+    let body = serde_json::json!({ "state": "Running", "version": VERSION });
+    Ok(ok_json(serde_json::to_string(&body)?))
 }

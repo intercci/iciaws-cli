@@ -1,18 +1,18 @@
 #![allow(dead_code)]
-use crate::{
-    models::user::User,
-};
+use crate::models::user::User;
 use anyhow::Result;
 use iciaws_dynamo::DynamoClient;
 use iciaws_router::{
     addons::AddonHolder,
-    errors::{not_found_error, unauthorized_error},
+    errors::bad_request_error,
     input::RouteHandlerInput,
-    output::{RouteHandlerOutput, get_ok, query_page_ok, get_failed, item_created, item_updated, item_deleted},
+    output::{
+        get_failed, get_ok, item_created, item_deleted, item_updated, query_ok, query_page_ok,
+        RouteHandlerOutput,
+    },
     types::RouteHandler,
 };
 use iciaws_macros::route;
-use lambda_http::tracing;
 use tracing::instrument;
 use std::pin::Pin;
 use std::future::Future;
@@ -56,7 +56,8 @@ pub async fn create_user(
     addons: &AddonHolder,
 ) -> Result<RouteHandlerOutput> {
     let dynamo = addons.get::<&DynamoClient>("dynamo")?;
-    let uid = User::create_user(dynamo, input.body.unwrap()).await?;
+    let body = input.body.ok_or_else(|| bad_request_error("request body required"))?;
+    let uid = User::create_user(dynamo, body).await?;
     item_created("user", "uid", &uid)
 }
 
@@ -68,8 +69,9 @@ pub async fn update_user(
 ) -> Result<RouteHandlerOutput> {
     let uid = input.get_path_value("uid")?;
     let dynamo = addons.get::<&DynamoClient>("dynamo")?;
+    let body = input.body.ok_or_else(|| bad_request_error("request body required"))?;
     let fields = ["name", "given_name", "family_name", "title", "role"];
-    let _ = User::update_user(dynamo, &uid, input.body.unwrap(), &fields).await?;
+    User::update_user(dynamo, &uid, body, &fields).await?;
     item_updated("user")
 }
 

@@ -46,8 +46,8 @@ fn base64_decode(input: &str) -> Vec<u8> {
 fn substitute(content: &str, project_name: &str, description: &str) -> String {
     let mut result = content.to_string();
     result = result.replace("$NAME$", project_name);
-    result = result.replace("{{ project_name }}", project_name);
-    result = result.replace("{{ description }}", description);
+    result = result.replace("__PROJECT_NAME__", project_name);
+    result = result.replace("__DESCRIPTION__", description);
     result
 }
 
@@ -241,13 +241,13 @@ mod tests {
 
     #[test]
     fn test_substitute_name() {
-        let input = "$NAME$ {{ project_name }}";
+        let input = "$NAME$ __PROJECT_NAME__";
         assert_eq!(substitute(input, "myapi", "desc"), "myapi myapi");
     }
 
     #[test]
     fn test_substitute_description() {
-        let input = "{{ description }}";
+        let input = "__DESCRIPTION__";
         assert_eq!(substitute(input, "x", "hello world"), "hello world");
     }
 
@@ -327,7 +327,7 @@ use iciaws_ses::get_ses_client;
         for (name, b64) in get_template_files() {
             let bytes = base64_decode(b64);
             let content = String::from_utf8(bytes).unwrap();
-            let has_placeholder = content.contains("$NAME$") || content.contains("{{ project_name }}") || content.contains("{{ description }}");
+            let has_placeholder = content.contains("$NAME$") || content.contains("__PROJECT_NAME__") || content.contains("__DESCRIPTION__");
             if has_placeholder {
                 let processed = substitute(&content, "myproject", "A cool API");
                 assert!(processed.contains("myproject"), "File {} should contain substituted project name", name);

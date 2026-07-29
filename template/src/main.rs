@@ -11,11 +11,9 @@ use iciaws_s3::get_s3_client;
 use iciaws_ses::get_ses_client;
 use iciaws_sns::get_sns_client;
 
-
 async fn function_handler(event: Request, router: &Router) -> Result<Response<Body>, Error> {
-    let rs = router.route(event).await;
-    let resp = rs.try_into()?;
-    tracing::info!(" <---- function_handler returns: {:?}", resp);
+    let resp: Response<Body> = router.route(event).await.try_into()?;
+    tracing::info!(" <---- function_handler returns: {resp:?}");
     Ok(resp)
 }
 
@@ -23,26 +21,20 @@ async fn function_handler(event: Request, router: &Router) -> Result<Response<Bo
 async fn main() -> Result<(), Error> {
     tracing::init_default_subscriber();
 
-    let tablename = TABLENAME.clone();
-    let dynamo_client = get_dynamo_client(Some(tablename)).await;
-    let s3_client = get_s3_client().await;
-    let ses_client = get_ses_client().await;
-    let sns_client = get_sns_client().await;
-
     let addon_map = AddonHolder::new();
-
-    addon_map.put_addon("dynamo", dynamo_client);
-    addon_map.put_addon("s3", s3_client);
-    addon_map.put_addon("ses", ses_client);
-    addon_map.put_addon("sns", sns_client);
+    addon_map.put_addon("dynamo", get_dynamo_client(Some(TABLENAME.clone())).await);
+    addon_map.put_addon("s3", get_s3_client().await);
+    addon_map.put_addon("ses", get_ses_client().await);
+    addon_map.put_addon("sns", get_sns_client().await);
 
     let mut router = Router::new(addon_map);
     add_routes(&mut router);
 
-    let router_ref = &router;
+    // Borrow router so the move closure below can share it across invocations.
+    let router = &router;
 
     run(service_fn(move |event| async move {
-        function_handler(event, router_ref).await
+        function_handler(event, router).await
     }))
     .await
 }
@@ -50,31 +42,33 @@ async fn main() -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use iciaws_router::addons::AddonHolder;
     use http::Request;
-    use lambda_http::Body;
+    use lambda_http::{Body, RequestExt};
 
-    #[tokio::test]
-    async fn test_basic_handler() {
-        let addon_map = AddonHolder::new();
-        let mut router = Router::new(addon_map);
+    fn test_router() -> Router {
+        let mut router = Router::new(AddonHolder::new());
         add_routes(&mut router);
-        
-        use lambda_http::RequestExt;
+        router
+    }
+
+    async fn route_get(router: &Router, path: &str) -> Response<Body> {
         let request = Request::builder()
-            .uri("/version")
+            .uri(path)
             .method(http::Method::GET)
             .body(Body::Empty)
-            .unwrap();
-        
-        let req = request.with_raw_http_path("/version");
-        let result = router.route(req).await;
-        let response: Response<Body> = result.try_into().unwrap();
-        
+            .unwrap()
+            .with_raw_http_path(path);
+        router.route(request).await.try_into().unwrap()
+    }
+
+    #[tokio::test]
+    async fn test_version_endpoint_returns_200() {
+        let router = test_router();
+        let response = route_get(&router, "/version").await;
+
         assert_eq!(response.status(), 200);
-        let body_bytes = response.body().to_vec();
-        let body_string = String::from_utf8(body_bytes).unwrap();
-        assert!(body_string.contains("version"));
-        assert!(body_string.contains("Running"));
+        let body = String::from_utf8(response.body().to_vec()).unwrap();
+        assert!(body.contains("version"), "response body: {body}");
+        assert!(body.contains("Running"), "response body: {body}");
     }
 }

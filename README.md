@@ -10,7 +10,7 @@ A command-line scaffolding tool that generates AWS serverless API projects from 
 
 - **Interactive setup** — prompts for project name, description, and which AWS services to include (S3, SES, SNS)
 - **Smart pruning** — removes unselected service crates, client initialisation, and addon registrations automatically
-- **Variable substitution** — replaces `$NAME$`, `{{ project_name }}`, and `{{ description }}` placeholders across all template files
+- **Variable substitution** — replaces `$NAME$`, `__PROJECT_NAME__`, and `__DESCRIPTION__` placeholders across all template files
 - **Zero runtime overhead** — the template is embedded at compile time via a build script; no extra dependencies at runtime beyond what the generated project needs
 - **AI-ready** — includes a `CLAUDE.md` in every generated project with detailed conventions for extending models and handlers with an AI agent
 

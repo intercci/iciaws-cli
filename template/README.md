@@ -1,6 +1,6 @@
 # Introduction
 
-{{ project_name }} is a Rust project that implements an AWS Lambda function in Rust.
+__PROJECT_NAME__ is a Rust project that implements an AWS Lambda function in Rust.
 
 ## Prerequisites
 
