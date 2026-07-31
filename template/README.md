@@ -15,9 +15,29 @@ Read more about building your lambda function in [the Cargo Lambda documentation
 
 ## Testing
 
-You can run regular Rust unit tests with `cargo test`.
+### Unit test only
 
-You can also run integration tests with unit tests by running a [https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html](local DynamoDB server). Use iciaws_test_helper crate to simplify the test code.
+```bash
+cargo test --lib
+```
+
+### Integration test only
+
+Start a [https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html](local DynamoDB server) and a Docker engine before running the integration tests.
+
+```bash
+cargo test --test '*'
+# or a specific test
+cargo test --test versions_test
+```
+
+### Both unit and integration tests
+
+```bash
+cargo test
+```
+
+### Test with Cargo Lambda
 
 If you want to run integration tests locally, you can use the `cargo lambda watch` and `cargo lambda invoke` commands to do it.
 

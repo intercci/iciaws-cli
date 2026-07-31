@@ -1,15 +1,16 @@
 use anyhow::Result;
+use http::StatusCode;
 use iciaws_router::{
     addons::AddonHolder,
     input::RouteHandlerInput,
-    output::{ok_json, RouteHandlerOutput},
+    output::RouteHandlerOutput,
     types::RouteHandler,
 };
 use iciaws_macros::route;
 use std::pin::Pin;
 use std::future::Future;
 
-const VERSION: &str = "0.0.1";
+const VERSION: &str = "0.0.1"; // this can be incremented using the tool upver upon deployment
 
 /// Handle `GET /version` — returns service name and version.
 #[route("GET/version")]
@@ -17,6 +18,5 @@ pub async fn get_version(
     _input: RouteHandlerInput,
     _addons: &AddonHolder,
 ) -> Result<RouteHandlerOutput> {
-    let body = serde_json::json!({ "state": "Running", "version": VERSION });
-    Ok(ok_json(serde_json::to_string(&body)?))
+    Ok(RouteHandlerOutput::message_output(StatusCode::OK, VERSION))
 }

@@ -1,12 +1,8 @@
 use iciaws_router::{addons::AddonHolder, router::Router};
 use lambda_http::{Body, Error, Request, Response, run, service_fn, tracing};
-mod common;
-mod handlers;
-mod models;
-mod routes;
-use common::utils::TABLENAME;
+use __PROJECT_NAME__::common::utils::TABLENAME;
 use iciaws_dynamo::get_dynamo_client;
-use routes::add_routes;
+use __PROJECT_NAME__::routes::add_routes;
 use iciaws_s3::get_s3_client;
 use iciaws_ses::get_ses_client;
 use iciaws_sns::get_sns_client;

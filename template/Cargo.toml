@@ -26,6 +26,7 @@ nanoid = "0.5.0"
 bytes = "1.10.1"
 anyhow = "1.0.102"
 thiserror = "2.0.18"
+regex = "1.12.3"
 
 iciaws_router = { git = "https://github.com/intercci/iciaws", package = "iciaws_router" }
 iciaws_macros = { git = "https://github.com/intercci/iciaws", package = "iciaws_macros" }
@@ -35,5 +36,5 @@ iciaws_ses = { git = "https://github.com/intercci/iciaws", package = "iciaws_ses
 iciaws_sns = { git = "https://github.com/intercci/iciaws", package = "iciaws_sns" }
 
 [dev-dependencies]
-regex = "1.12.3"
 serial_test = "4.0.1"
+iciaws_test_helper = { git = "https://github.com/intercci/iciaws", package = "iciaws_test_helper" }
